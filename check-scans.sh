@@ -1,20 +1,25 @@
 #!/bin/bash
 # Script to check for scan ran ok
 ### Var Section
+source email.txt
 Npath=/opt/sc/orgs/1/VDB/
 
-find /opt/sc/orgs/1/VDB/ -mtime -3 -name *.zip
-# Might be better to do a find -mtime instead
-ls -l /opt/sc/orgs/1/VDB/$(date +%Y-%m-%d)/*.zip > ls-nessus-results.txt
-
-for n in $(cat ls-nessus-results.txt)
+# The find cmd looks for scans that have run in the last 3 days.
+# The for loop unzips the files into the current working directory.
+for n in $(find /opt/sc/orgs/1/VDB/ -mtime -3 -name *.zip)
 do unzip -q $n
 done
 
-# example: unzip /opt/sc/orgs/1/VDB/2022-11-02/4601.nessus.zip
-sed -i 's/<\/tag>//g' *.nessus && sed -i 's/">//g' *.nessus && sed -i 's/<tag name="//g' *.nessus > tmp-nessus
-mailx -s "Nessus results"  2bitninja@gmail.com < tmp-nessus
+# Creates the report
+for l in $(ls *.nessus)
+do echo -e "\n$l"
+cat $l | grep "Scan name"|sort -u
+cat $l | egrep -v '>false|>true'|egrep 'Credentialed_Scan|host-ip'
+done > tmp-out
 
+# Remove unwnted XML tags
+sed -e 's/<tag name="//g' -e 's/">/: /g' -e 's/<\/tag>//g' tmp-out > output
+# Sends email
+mailx -s "Nessus results" $emails < output
 # Remove tmp files 
-rm -f tmp-nessus
-#unzip /opt/sc/orgs/1/VDB/
+rm -rf tmp-out *.nessus
