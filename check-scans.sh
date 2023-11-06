@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script to check for scan ran ok
 ### Var Section
-source email.txt
+source email.txt 
 Npath=/opt/sc/orgs/1/VDB/
 
 # The find cmd looks for scans that have run in the last 3 days.
@@ -19,7 +19,9 @@ done > tmp-out
 
 # Remove unwnted XML tags
 sed -e 's/<tag name="//g' -e 's/">/: /g' -e 's/<\/tag>//g' tmp-out > output
-# Sends email
+cat output
+
+# Sends email - Need to add an email to the email.txt for the email to work.
 mailx -s "Nessus results" $emails < output
 # Remove tmp files 
-rm -rf tmp-out *.nessus
+rm -rf tmp-out *.nessus output
