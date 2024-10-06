@@ -45,10 +45,8 @@ To install and prepare the script for use, follow these steps:
 To use the Check Scans script, you need elevated privileges or be part of the tns group. Run the following command:
    ```bash
    sudo ./check-scans.sh
-   ```A
+   ```
 ## Contributing
 We welcome contributions! Please read our Contributing Guidelines for more information.
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-
